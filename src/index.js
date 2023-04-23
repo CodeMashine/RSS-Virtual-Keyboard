@@ -3,8 +3,11 @@ import { Keyboard } from "./keyboardClass.js" ;
 import "./style.scss" ;
 
 
-let test = new Keyboard ;
+let keyboard = new Keyboard ;
 
-test.test() ;
+keyboard.renderRoot() ;
+keyboard.renderKeyboard() ;
+// keyboard.listener() ;
+keyboard.langListner() ;
 
 console.log("work") ;

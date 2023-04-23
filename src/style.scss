@@ -1,3 +1,23 @@
-body{
-  background-color: tomato;
+*{
+  margin:0 ;
+  padding:0 ;
+}
+
+.keyboard__area{
+  max-width: 80%;
+  margin: 0 auto ;
+  display:grid ;
+  grid-template-columns: repeat(15,1fr);
+  gap:5px ;
+
+  .keyboard__area__square{
+    border:1px solid black ;
+    text-align: center;
+  }
+
+
+}
+
+.pressed{
+  background-color: aqua ;
 }
