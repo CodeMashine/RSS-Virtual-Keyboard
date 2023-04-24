@@ -139,16 +139,31 @@ class Keyboard {
   } 
 
   renderRoot() {
-    const root = document.querySelector(".root");
-    let textArea = this.renderArea();
-    let keyboard = this.renderKeyboard();
-    // debugger;
+    const body = document.querySelector("body") ;
+    const root = document.createElement("div") ;
+    root.className = "keyboard" ;
+    const textArea = document.createElement("textarea") ;
+    textArea.className = "keyboard__text-field" ;
+    
+    const keyboard = document.createElement("div") ;
+    keyboard.className = "keyboard__area" ;
+    
     root.append(textArea, keyboard);
+    
+    body.append(root) ;
+
+    // textArea.innerHTML = this.renderArea();
+
+
+
+    // let textArea = this.renderArea();
+    // let keyboard = this.renderKeyboard();
+    // debugger;
   }
 
   renderArea() {
-    const textArea = document.createElement("textarea");
-    textArea.className = "keyboard__text-field";
+    const textArea = document.querySelector(".keyboard__text-field");
+    // textArea.className = "keyboard__text-field";
     textArea.style.width = "100%";
     // textArea.rows = "20" ;
     // textArea.cols = "80" ;
@@ -166,8 +181,8 @@ class Keyboard {
   renderKeyboard() {
     let alphabet = this.languageListener();
     console.log("render keyboard",alphabet) ;
-    let keyboard = document.createElement("div");
-    keyboard.className = "keyboard__area";
+    let keyboard = document.querySelector(".keyboard__area");
+    // keyboard.className = "keyboard__area";
     for (let key in alphabet) {
       let square = document.createElement("div");
       square.className = `keyboard__area__square keyboard__area__square__${key} `;
@@ -187,6 +202,7 @@ class Keyboard {
     // let keyboard = document.querySelector
 
     function caseToggler(store) {
+      let alphabet = store.languageListener();
       console.log("caseToggler");
       let squares = document.querySelectorAll(".keyboard__area__square");
       for (let i = 0; i < squares.length; i++) {
@@ -197,9 +213,7 @@ class Keyboard {
     function capsListner(store) {
       console.log("caps listner work");
       let caps = document.querySelector(".keyboard__area__square__CapsLock");
-      let shiftR = document.querySelector(
-        ".keyboard__area__square__ShiftRight"
-      );
+      let shiftR = document.querySelector(".keyboard__area__square__ShiftRight");
       let shiftL = document.querySelector(".keyboard__area__square__ShiftLeft");
 
       if (caps.classList.contains("pressed") ||
@@ -220,12 +234,33 @@ class Keyboard {
     function shineKey(code) {
       let key = document.querySelector(`.keyboard__area__square__${code}`);
       // debugger ;
-      key.classList.toggle("pressed");
+      if (key){
+        key.classList.toggle("pressed");
+      }
     }
 
+    function langToggler(store) {
+      let ctrlL = document.querySelector(".keyboard__area__square__ControlLeft");
+      let altLeft = document.querySelector(".keyboard__area__square__AltLeft");
+      console.log("langTogler") ;
+    if (
+      ctrlL.classList.contains("pressed") &&
+      altLeft.classList.contains("pressed")
+    ){
+       if (store.language === "EN") {
+        store.language = "RU";
+      } else {
+        store.language = "EN";
+      }
+      caseToggler(store) ;
+    }
+  }
+
     function keyboardHandler(event, store) {
+      let alphabet = store.languageListener();
       console.log(event.code);
-      if (!keys.includes(event.code)) return;
+      if (event.code === "Delete") return ;
+      if (!keys.includes(event.code)) return ;
 
       // let upperPointer = capsListner() ;
       // let keys = document.querySelectorAll(".keyboard__area__square") ;
@@ -245,16 +280,41 @@ class Keyboard {
         capsListner(store);
       } else if (event.code === "Enter") {
         textArea.value += "\n";
-      } else if (event.code === "Delete") {
+      // } else if (event.code === "Delete") {
         // textArea.value = textArea.slice(0 , textarea[]);
-      } else if (event.code.includes("Control") || event.code.includes("Alt")) {
-        // textArea.value += "";
-      } else {
+      // } else if (event.code.includes("Control") && event.code.includes("Alt")) {
+      }else if(event.code.includes("Control") || event.code.includes("Alt")){
+        langToggler(store) ;
+        // do nothing ;
+      }else {
         // let upperPointer = capsListner() ;
         textArea.value += alphabet[event.code][store.case];
         // debugger ;
       }
     }
+
+
+
+    window.addEventListener("pointerdown", (event) => {
+      console.log("click") ;
+      console.log(event) ;
+      console.log(event.target) ;
+      console.log(event.target.dataset.key) ;
+      if( !event.target.classList.contains("keyboard__area__square") ) return ;
+      let fakeEvent = new Event("keydown") ;
+      fakeEvent.code = event.target.dataset.key ;
+      console.log(fakeEvent.type) ;
+      window.dispatchEvent(fakeEvent) ;
+    });
+
+    window.addEventListener("pointerup", () => {
+      let button = document.querySelector(".pressed") ;
+      if(button.dataset.key === "CapsLock") return ;
+      let fakeEvent = new Event("keyup") ;
+      fakeEvent.code = button.dataset.key ;
+      console.log(fakeEvent.type) ;
+      window.dispatchEvent(fakeEvent) ;
+    });
 
     window.addEventListener("keydown", (event) => keyboardHandler(event, this));
     window.addEventListener("keyup", (event) => {
@@ -263,30 +323,35 @@ class Keyboard {
     });
   }
 
-  langListner() {
-    console.log("langlistener") ;
+  // langListner() {
+  //   console.log("langlistener") ;
     
-    function langToggler(store) {
-        let root = document.querySelector(".root") ;
-        let ctrlL = document.querySelector(".keyboard__area__square__ControlLeft");
-        let altLeft = document.querySelector(".keyboard__area__square__AltLeft");
-        console.log("langTogler") ;
-      if (
-        ctrlL.classList.contains("pressed") &&
-        altLeft.classList.contains("pressed")
-      ) {
-        if (store.language === "EN") {
-          store.language = "RU";
-        } else {
-          store.language = "EN";
-        }
-        root.append(store.renderKeyboard());
-      }
-    }
+  //   function langToggler(store) {
+  //       let root = document.querySelector(".keyboard") ;
+  //       let keyboard = document.querySelector(".keyboard__area") ;
+  //       let ctrlL = document.querySelector(".keyboard__area__square__ControlLeft");
+  //       let altLeft = document.querySelector(".keyboard__area__square__AltLeft");
+  //       console.log("langTogler") ;
+  //     if (
+  //       ctrlL.classList.contains("pressed") &&
+  //       altLeft.classList.contains("pressed")
+  //     ) {
+  //       if (store.language === "EN") {
+  //         store.language = "RU";
+  //       } else {
+  //         store.language = "EN";
+  //       }
+  //       console.dir(root.children) ;
+  //       // root.children[1] = store.renderKeyboard() ;
+  //       keyboard.innerHTML = "" ;
+  //       store.renderKeyboard() ;
+  //       // keyboard.append(store.renderKeyboard());
+  //     }
+  //   }
 
-    window.addEventListener("keydown", () =>  langToggler(this));
-    // altLeft.addEventListener("keydown", () => langToggler(this));
-  }
+  //   window.addEventListener("keydown", () =>  langToggler(this));
+  //   // altLeft.addEventListener("keydown", () => langToggler(this));
+  // }
 }
 
 export { Keyboard };
