@@ -140,10 +140,12 @@ class Keyboard {
 
   renderRoot() {
     const body = document.querySelector("body") ;
+    
     const root = document.createElement("div") ;
     root.className = "keyboard" ;
-    const textArea = document.createElement("textarea") ;
-    textArea.className = "keyboard__text-field" ;
+    
+    const textField = document.createElement("textarea") ;
+    textField.className = "keyboard__text-field" ;
     
     const keyboard = document.createElement("div") ;
     keyboard.className = "keyboard__area" ;
@@ -151,29 +153,13 @@ class Keyboard {
     const description = document.createElement("div") ;
     description.className = "keyboard__description" ;
     
-    root.append(textArea, keyboard , description);
+    root.append(textField, keyboard , description);
     
     body.append(root) ;
-
-    // textArea.innerHTML = this.renderArea();
-
-
-
-    // let textArea = this.renderArea();
-    // let keyboard = this.renderKeyboard();
-    // debugger;
+    textField.focus() ;
   }
 
-  // renderArea() {
-  //   const textArea = document.querySelector(".keyboard__text-field");
-  //   // textArea.className = "keyboard__text-field";
-  //   // textArea.style.width = "100%";
-  //   // textArea.rows = "20" ;
-  //   // textArea.cols = "80" ;
-  //   return textArea;
-  // }
-
-  alphabetCreator() {
+    alphabetCreator() {
     let lang = "alphabet" + this.language;
     let alphabet = this[lang];
     return alphabet;
@@ -181,9 +167,7 @@ class Keyboard {
 
   renderKeyboard() {
     let alphabet = this.alphabetCreator();
-    // console.log("render keyboard",alphabet) ;
     let keyboard = document.querySelector(".keyboard__area");
-    // keyboard.className = "keyboard__area";
     for (let key in alphabet) {
       let square = document.createElement("div");
       square.className = `keyboard__square keyboard__square__${key} `;
@@ -191,19 +175,16 @@ class Keyboard {
       square.innerText = alphabet[key].normal;
       keyboard.append(square);
     }
-    // this.listener() ;
     return keyboard;
   }
 
   listener() {
     let alphabet = this.alphabetCreator();
-    // console.log("listener",alphabet) ;
     let keys = Object.keys(alphabet);
-    let textArea = document.querySelector(".keyboard__text-field");
+    let textField = document.querySelector(".keyboard__text-field");
 
     function caseToggler(store) {
       let alphabet = store.alphabetCreator();
-      // console.log("caseToggler");
       let squares = document.querySelectorAll(".keyboard__square");
       for (let i = 0; i < squares.length; i++) {
         squares[i].innerText = alphabet[squares[i].dataset.key][store.case];
@@ -211,7 +192,6 @@ class Keyboard {
     }
 
     function capsListner(store) {
-      console.log("caps listner work");
       let caps = document.querySelector(".keyboard__square__CapsLock");
       let shiftR = document.querySelector(".keyboard__square__ShiftRight");
       let shiftL = document.querySelector(".keyboard__square__ShiftLeft");
@@ -222,47 +202,42 @@ class Keyboard {
 
       if ( capsPressed && shiftPressed ) {
         store.case = "normal";
-        // caseToggler(store);
-        // console.log("upper work");
       } else if ( capsPressed || shiftPressed ) {
-        // console.log(capsPressed && shiftPressed) ;
         store.case = "upperCase";
-        // console.log("upper not work");
       }else{
         store.case = "normal";
       }
+
       caseToggler(store);
 
     }
 
     function shineKey(code) {
-      let key = document.querySelector(`.keyboard__square__${code}`);
-      if (key){
-        key.classList.toggle("pressed");
+      let key = document.querySelector(`.keyboard__square__${code}`) ;
+
+      if ( key ){
+        key.classList.toggle("pressed") ;
+
       }
     }
 
     function langToggler(store) {
       let ctrlL = document.querySelector(".keyboard__square__ControlLeft");
       let altLeft = document.querySelector(".keyboard__square__AltLeft");
-      // console.log("langTogler") ;
-    if (
-      ctrlL.classList.contains("pressed") &&
-      altLeft.classList.contains("pressed")
-    ){
-       if (store.language === "EN") {
-        store.language = "RU";
-      } else {
-        store.language = "EN";
+
+      if ( ctrlL.classList.contains("pressed") && altLeft.classList.contains("pressed" )){
+        if (store.language === "EN") {
+          store.language = "RU";
+        } else {
+          store.language = "EN";
+        }
+        caseToggler() ;
       }
-      caseToggler(store) ;
+
+      store.showDescription() ;
+
+      localStorage.setItem("language" , store.language) ;
     }
-
-
-    store.showDescription() ;
-
-    localStorage.setItem("language" , store.language) ;
-  }
   
     function insert(area , pos , letter , toDelete = 0){
       let arr = Array.from(area.value) ;
@@ -280,11 +255,8 @@ class Keyboard {
     }
 
     function keyboardHandler(event, store) {
-      let position = textArea.selectionStart ;
-      console.log('Caret position:' , position);
-      // console.dir(textArea);
+      let position = textField.selectionStart ;
       let { code } = event ;
-      console.log("event" , code) ;
       let alphabet = store.alphabetCreator();
 
       if (!keys.includes(code)) return ;
@@ -296,29 +268,32 @@ class Keyboard {
       event.preventDefault();
 
       if (code === "Backspace") {
-        insert(textArea, position - 1 , "" , 1) ;
+        insert(textField, position - 1 , "" , 1) ;
       } else if(code === "Delete"){
-        insert(textArea, position , "" , 1) ;
+        insert(textField, position , "" , 1) ;
       } else if (code === "Tab") {
-        insert(textArea, position , "\t") ;
+        insert(textField, position , "\t") ;
       } else if (code === "Space") {
-        insert(textArea, position , " ") ;
+        insert(textField, position , " ") ;
       } else if (code === "CapsLock") {
         capsListner(store);
         shineKey(code);
       } else if (code.includes("Shift")) {
         capsListner(store);
       } else if (code === "Enter") {
-        insert(textArea, position , "\n") ;
+        insert(textField, position , "\n") ;
       }else if(code.includes("Control") || code.includes("Alt")){
         langToggler(store) ;
       }else {
         let letter = alphabet[code][store.case];
-        insert(textArea, position , letter) ;
+        insert(textField, position , letter) ;
       }
     }
 
-    window.addEventListener("keydown", (event) => keyboardHandler(event, this));
+    window.addEventListener("keydown", (event) =>{
+      event.preventDefault() ;
+      keyboardHandler(event, this) ;
+    } )
     window.addEventListener("keyup", (event) => {
       shineKey(event.code);
       capsListner(this);
@@ -326,23 +301,17 @@ class Keyboard {
     });
     
 
-    // click handler
+    // mouse click handler
 
     let keyboardField = document.querySelector(".keyboard__area") ;
-    // let textarea = document.querySelector(".keyboard__area") ;
-
-
 
     keyboardField.addEventListener("pointerdown", (event) => {
-      // let position = textArea.selectionStart ;
-      // console.log('Caret position:' , position);
       event.preventDefault() ;
       if( !event.target.classList.contains("keyboard__square") ) return ;
       let fakeEvent = new Event("keydown") ;
       fakeEvent.key = event.target.dataset.key ;
       fakeEvent.code = event.target.dataset.key ;
       window.dispatchEvent(fakeEvent) ;
-      // localStorage.setItem("pressed" ,event.target.className ) ;
     });
 
     keyboardField.addEventListener("pointerup", (event) => {

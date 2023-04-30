@@ -7,5 +7,5 @@ let keyboard = new Keyboard ;
 
 keyboard.renderRoot() ;
 keyboard.renderKeyboard() ;
-keyboard.listener() ;
 keyboard.showDescription() ;
+keyboard.listener() ;
