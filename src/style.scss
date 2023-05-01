@@ -1,0 +1,95 @@
+
+/* oswald-regular - latin_cyrillic */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./fonts/oswald-v49-latin_cyrillic-regular.woff2") format("woff2"),
+      url("./fonts/oswald-v49-latin_cyrillic-regular.woff") format("woff"); 
+}
+
+*{
+  margin:0 ;
+  padding:0 ;
+}
+
+.keyboard{
+  font-family: "Oswald" , sans-serif;
+}
+
+.keyboard__text-field{
+  font-family: "Oswald" , sans-serif;
+  font-size: 2rem;
+  display: block;
+  width: 80%;
+  height: 50vh;
+  margin: 0 auto ;
+  margin-top: 5vh ;
+  border: none ;
+  outline:none !important ;
+}
+
+.keyboard__area{
+  box-sizing: border-box ;
+  max-width: 80%;
+  margin: 0 auto ;
+  display:grid ;
+  grid-template-columns: repeat(30,1fr);
+  gap:7px ;
+  outline : 1px solid black ;
+  padding: 15px ;
+  border-radius: 15px;
+
+  .keyboard__square{
+    grid-column-start: span 2 ;
+    border:1px solid black ;
+    text-align: center;
+    border-radius: 3px ;
+    cursor: pointer ;
+    box-shadow:  0 3px 2px rgb(29, 28, 28);
+    transition: 0.1s ;
+  }
+
+  .keyboard__square__Tab ,
+  .keyboard__square__ShiftRight{
+    grid-column-start: span 3 ;  
+  }  
+  
+  .keyboard__square__Backslash ,
+  .keyboard__square__Super{
+    grid-column-start: span 1 ;  
+  }
+ 
+  .keyboard__square__Enter,
+  .keyboard__square__ControlRight,
+  .keyboard__square__CapsLock,
+  .keyboard__square__Backspace{
+    grid-column-start: span 4 ;  
+  }
+
+  .keyboard__square__ShiftLeft{
+    grid-column-start: 2 ;  
+    grid-column-end: 5 ;  
+  }
+  
+  .keyboard__square__ControlLeft{
+    grid-column-start: 2 ;  
+    grid-column-end: 4 ;  
+  }
+
+  .keyboard__square__Space{
+    grid-column-start: span 10 ;  
+  }
+ 
+}
+
+.keyboard__description{
+  margin-top: 3vh;
+  text-align: center;
+}
+
+.pressed{
+  box-shadow:  none !important ;
+  transform: translate(0 , 2px) ;
+}
